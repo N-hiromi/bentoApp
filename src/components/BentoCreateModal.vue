@@ -9,37 +9,45 @@
           </div>
           <div class="modal-body">
             <div class="menu-form">
-              <div class="form-item">
-                <label for="date">日付</label>
-                <input type="date" v-model="items.date">
+              <div class="date-star row">
+                <div class="form-item col-5">
+                  <label for="date">日付</label>
+                  <input type="date" class="form-control" v-model="items.date">
+                </div>
+                <div class="form-item col-4">
+                  <label for="star">評価</label>
+                  <select class="form-select" name="star" v-model="items.star">
+                    <option value="1">★</option>
+                    <option value="2">★★</option>
+                    <option value="3">★★★</option>
+                    <option value="4">★★★★</option>
+                    <option value="5">★★★★★</option>
+                  </select>
+                </div>
+                <div class="weekend-select col mt-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" v-model="weekEndFlag" id="flexCheckDefault">
+                    <label class="form-check-label" for="flexCheckDefault">休日</label>
+                  </div>
+                </div>
               </div>
               <div class="form-item">
                 <label for="image">画像</label>
-                <input id="file" type="file" accept="image/*" capture="environment" v-on:change="setImage">
+                <input class="form-control" type="file" id="file" accept="image/*" capture="environment" v-on:change="setImage">
               </div>
               <div class="form-item">
                 <label for="point">ワンポイント</label>
-                <textarea name="point" id="" cols="30" rows="10" v-model="items.point"></textarea>
+                <textarea class="form-control" name="point" rows="3" v-model="items.point"></textarea>
               </div>
               <div class="form-item">
                 <label for="daily">日記</label>
-                <textarea name="daily" id="" cols="30" rows="10" v-model="items.daily"></textarea>
+                <textarea class="form-control" name="daily" id="" rows="3" v-model="items.daily"></textarea>
               </div>
-            <div class="form-item">
-              <label for="star">評価</label>
-              <select name="star" v-model="items.star">
-                <option value="1">★</option>
-                <option value="2">★★</option>
-                <option value="3">★★★</option>
-                <option value="4">★★★★</option>
-                <option value="5">★★★★★</option>
-              </select>
             </div>
           </div>
-        </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" v-on:click="closeBentoCreateModal">Close</button>
-          <button class="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal" data-bs-dismiss="modal">Open second modal</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" v-on:click="closeBentoCreateModal">やめる</button>
+          <button class="btn btn-primary" data-bs-target="#exampleModalToggle2" data-bs-toggle="modal" data-bs-dismiss="modal">次へ</button>
         </div>
       </div>
     </div>
@@ -54,15 +62,14 @@
         <div class="modal-body">
           <div class="menu-form">
         <div class="form-item">
-          <p>メニュー</p>
-          <label for="name"></label>
-          <input type="text" id="name" v-model="menuForm">
+          <label for="name">メニュー</label>
+          <input class="form-control" type="text" id="name" v-model="menuForm">
         </div>
         <div class="taste-form">
           <div v-for="(tasteForm, tasteIndex) in tasteForms" :key="tasteIndex">
             <div class="form-item">
-              <label for="name"></label>
-              <input type="text" id="name" v-model="tasteForms[tasteIndex]">
+              <label for="name">調味料{{ tasteIndex + 1}}</label>
+              <input class="form-control" type="text" id="name" v-model="tasteForms[tasteIndex]">
             </div>
           </div>
         </div>
@@ -73,18 +80,18 @@
           <p>{{ menuList.menu }}</p>
           <p>{{ menuList }}</p>
           <button v-on:click="deleteMenu(menuListIndex)">メニューを削除</button>
-          <p>材料：</p>
+          <p>材料</p>
           <ul v-for="(taste, tasteIndex) in menuList.tastes" :key="tasteIndex">
             <li>{{ taste }}</li>
             <button v-on:click="deleteTaste(menuListIndex, tasteIndex)">調味料を削除</button>
           </ul>
         </div>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" v-on:click="bentoSave">登録</button>
       </div>
           <button v-on:click="showMenu">メニューを登録</button>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-primary" data-bs-target="#exampleModalToggle" data-bs-toggle="modal" data-bs-dismiss="modal">Back to first</button>
+          <button class="btn btn-secondary" data-bs-target="#exampleModalToggle" data-bs-toggle="modal" data-bs-dismiss="modal">戻る</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" v-on:click="bentoSave">登録</button>
         </div>
       </div>
     </div>
@@ -136,8 +143,11 @@ export default defineComponent({
       items.point= ""
       items.star= 0
       menuLists.value.length= 0
+      //登録画像の削除
       const obj = document.getElementById('file');
       obj.value = '';
+      //調味料登録フォームを1個にする
+      tasteForms.length= 1
       console.log("初期化完了")
       //modalを閉じる
       store.commit('updateBentoCreateModalFlag', false)
@@ -174,10 +184,15 @@ export default defineComponent({
     
     //モーダル内の情報をdatabaseへ登録。登録内容を親に渡す。
     const bentoSave= async ()=> {
+      //登録欄の年と日付を取得
+      const year = items.date.slice(0, 4)
+      const month = Number(moment(items.date).format("MM"))
+      //保存する人のtokenを取得
+      const userId= store.state.idToken.uid
+      //登録モーダルを閉じてローディング開始
       store.commit('updateBentoCreateModalFlag', false)
       store.commit('updateLoadingFlag', true)
       const db= getDatabase(firebaseApp)
-      console.log("db", db)
       const storage = getStorage();
       const menus= []
       const tastes= []
@@ -190,9 +205,8 @@ export default defineComponent({
 
       //画像をstorageへ保存。
       //①フルパスの取得
-      const storageRef = fireStorageRef(storage, `images/${items.date}.jpg`)
-      console.log("storageRef", storageRef)
-      
+      const storageRef = fireStorageRef(storage,'bentos/' + userId + '/' + year + '/'+ month + '/'+ `${items.date}.jpg`)
+
       //②storageへアップロード
       const uploadImage= async () => {
         uploadBytes(storageRef, items.image).then(() => {
@@ -201,7 +215,7 @@ export default defineComponent({
       }
       //③画像のダウンロードとitems.imageへurlを格納
       const downloadUrl= async () => {
-        getDownloadURL(fireStorageRef(storage, `images/${items.date}.jpg`))
+        getDownloadURL(fireStorageRef(storage, 'bentos/' + userId + '/' + year + '/'+ month + '/'+ `${items.date}.jpg`))
         .then((url) => {
           items.image= url
           console.log("items.image1", url)
@@ -212,10 +226,9 @@ export default defineComponent({
       }
       //④画像のurlも含めてdbへ登録
       const saveItems= async () => {
-        const year = items.date.slice(0, 4)
-        const month = Number(moment(items.date).format("MM"))
-        console.log("month", month)
-        push(fireDataRef(db, 'bentos/'+ year + `/`+ month + `/`+items.date),{
+        
+        console.log("userId", userId)
+        push(fireDataRef(db, 'bentos/' + userId + '/' + year + `/`+ month + `/`+items.date),{
           weekEndFlag: Boolean(items.week),
           date: String(items.date),
           image: String(items.image),
@@ -239,6 +252,8 @@ export default defineComponent({
         items.point= ""
         items.star= 0
         menuLists.value.length= 0
+        //調味料登録フォームを1個にする
+        tasteForms.length= 1
         const obj = document.getElementById('file');
         obj.value = '';
         console.log("初期化完了")
@@ -272,6 +287,18 @@ export default defineComponent({
 })
 
 </script>
-<style scoped>
-
+<style scoped lang="scss">
+.menu-form {
+  text-align: left;
+  input {
+    display: block;
+  }
+  textarea {
+    display: block;
+    overflow:auto;
+  }
+  label {
+    margin-top: 2%;
+  }
+}
 </style>

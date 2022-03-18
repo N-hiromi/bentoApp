@@ -104,7 +104,8 @@ export default defineComponent({
       watch(selectYearMonthComputed, (newValue, oldValue) => {
         store.commit('updateLoadingFlag', true)
         console.log("ohatodane", newValue, oldValue)
-        onValue(fireDataRef(db, 'bentos/' + '/'+ selectYearMonth.year+ '/'+ selectYearMonth.month), (snapshot) => {
+        const userId= store.state.idToken.uid
+        onValue(fireDataRef(db, 'bentos/' +userId + '/'+ selectYearMonth.year+ '/'+ selectYearMonth.month), (snapshot) => {
         if (snapshot.val()){
           const datas = Object.values(snapshot.val())
           const dataArrays= datas.map(data => Object.values(data))
