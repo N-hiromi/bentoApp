@@ -1,20 +1,23 @@
 <template>
 <div>
   <Loading v-show="loadingFlag"></Loading>
-  <BentoCreateModal v-show="showModalFlag.BentoCreateModal"/>
-
-  <div class="form-item" >
+  <BentoCreate v-show="showModalFlag.bentoCreateModal"/>
+  <BentoUpdate v-show="showModalFlag.bentoUpdateModal" />
+  <div class="select my-3">
+    <div class="form-item d-inline-block" >
     <select class="selectYear" name="year" v-model="selectYearMonth.year">
       <option v-bind:value="today.year" selected>{{ today.year }}</option>
       <option v-bind:value="today.year -n" v-for="n of 3" :key="n">{{ today.year -n}}</option>
     </select>
   </div>
-  <div class="form-item">
+  <div class="form-item ms-3 d-inline-block">
     <select class="selectMonth" name="month" v-model="selectYearMonth.month">
       <option hidden>月を選択</option>
       <option v-bind:value="n" v-for="n of 12" :key="n">{{ n +"月" }}</option>
     </select>
   </div>
+  </div>
+  
   
   <BentoList v-bind:theads="theads" v-bind:items="items" />
   <BentoShowModal v-show="showModalFlag.bentoShowModal" v-bind:showModalFlag="showModalFlag.bentoShowModal"/>
@@ -22,7 +25,8 @@
 </template>
 <script>
 import { defineComponent, ref, reactive, computed, watch, onMounted } from 'vue' 
-import BentoCreateModal from '@/components/BentoCreateModal.vue'
+import BentoCreate from '@/components/BentoCreate.vue'
+import BentoUpdate from '@/components/BentoUpdate.vue'
 import BentoList from '@/components/BentoList.vue'
 import BentoShowModal from '@/components/BentoShowModal.vue'
 import { getDatabase, onValue } from "firebase/database"
@@ -37,7 +41,8 @@ import Loading from '@/components/Loading.vue'
 
 export default defineComponent({
   components: {
-    BentoCreateModal,
+    BentoCreate,
+    BentoUpdate,
     BentoList,
     BentoShowModal,
     Loading,
@@ -47,8 +52,9 @@ export default defineComponent({
 
     //modalの開け閉め
     const showModalFlag= reactive({
-      BentoCreateModal: false,
-      bentoShowModal: false
+      bentoCreateModal: false,
+      bentoShowModal: false,
+      bentoUpdateModal: false
     })
     const getBentoCreateModalFlag= computed(() => {
       return store.getters['bentoCreateModalFlag']
@@ -56,13 +62,18 @@ export default defineComponent({
     const getBentoShowModalFlag= computed(() => {
       return store.getters['bentoShowModalFlag']
     })
-    watch(getBentoCreateModalFlag, (newValue, oldValue) => {
-      console.log("ohato", newValue, oldValue)
-      showModalFlag.BentoCreateModal= newValue
+    const getBentoUpdateModalFlag= computed(() => {
+      return store.getters['bentoUpdateModalFlag']
     })
-    watch(getBentoShowModalFlag, (newValue, oldValue) => {
-      console.log("ohato", newValue, oldValue)
+    watch(getBentoCreateModalFlag, (newValue) => {
+      showModalFlag.bentoCreateModal= newValue
+    })
+    watch(getBentoShowModalFlag, (newValue) => {
       showModalFlag.bentoShowModal= newValue
+    })
+    watch(getBentoUpdateModalFlag, (newValue, oldValue) => {
+      console.log("getBentoUpdateModalFlag", newValue, oldValue)
+      showModalFlag.bentoUpdateModal= newValue
     })
 
     //画面表示したらloadingの終了
@@ -74,7 +85,7 @@ export default defineComponent({
       return store.getters['loadingFlag']
     })
     watch(getLoadingFlag, (newValue, oldValue) => {
-      console.log("ohato", newValue, oldValue)
+      console.log("watchLoading", newValue, oldValue)
       loadingFlag.value= newValue
     })
 
@@ -101,9 +112,8 @@ export default defineComponent({
       const selectYearMonthComputed = computed(() => {
         return [selectYearMonth.year, selectYearMonth.month];
       })
-      watch(selectYearMonthComputed, (newValue, oldValue) => {
+      watch(selectYearMonthComputed, () => {
         store.commit('updateLoadingFlag', true)
-        console.log("ohatodane", newValue, oldValue)
         const userId= store.state.idToken.uid
         onValue(fireDataRef(db, 'bentos/' +userId + '/'+ selectYearMonth.year+ '/'+ selectYearMonth.month), (snapshot) => {
         if (snapshot.val()){

@@ -1,100 +1,87 @@
 <template>
-  <div class="" v-if="showItem">
-    <div class="left-side">
-      <p>{{showItem.date}}</p>
-      <img :src="showItem.image" alt="bentoImage">
+<div v-if="showItem.date" class="modal fade bento-show-modal" id="showModalId" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{ showItem.date }}</h5>
+        <div class="col-4 d-inline modal-title" >
+          <p class="d-inline ps-1" v-for="n of showItem.star" :key="n">★</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" v-on:click="closeBentoShowModal"></button>
+      </div>
+      <div class="modal-body row">
+        <div class="left-side col-sm-6 col-12">
+          <img :src="showItem.image" alt="bentoImage">
+        </div>
+        <div class="light-side col-sm-6 col-12 text-start">
+          <p>メニュー</p>
+          <div v-if="showItem.menus !== []" class="menu-table">
+            <dl v-for="(menu, menuKey) in showItem.menus[0]" :key="menuKey">
+              <dt>{{ menu }}</dt>
+              <dd>
+                <p  class="d-inline ps-2" v-for="(taste, tasteKey) in showItem.tastes[0][menuKey]" :key="tasteKey">{{ taste }}</p>
+              </dd>
+            </dl>
+          </div>
+          <label for="point">ワンポイント</label>
+          <p>{{ showItem.point }}</p>
+          <label for="daily">日記</label>
+          <p>{{ showItem.daily }}</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" v-on:click="closeBentoShowModal">閉じる</button>
+        <a class="btn btn-primary" data-bs-dismiss="modal" data-bs-toggle="modal" href="#firstUpdateId" role="button" v-on:click= "openUpdateModal">変更</a>
+      </div>
     </div>
-    <div class="light-side">
-      <p>評価：★</p>
-      <div class="menu-taste"></div>
-      <p>メニュー</p>
-      <ul v-for="(menu, key) in showItem.menus" :key="key">
-        <li>{{ menu }}</li>
-      </ul>
-      <ul v-for="(taste, key) in showItem.tastes" :key="key">
-        <li>{{ taste }}</li>
-      </ul>
-      <label for="point">ワンポイント</label>
-      <textarea name="point" id="" cols="30" rows="10" v-model="showItem.point"></textarea>
-      <label for="daily">日記</label>
-      <textarea name="daily" id="" cols="30" rows="10" v-model="showItem.daily"></textarea>
-    </div>
-    <button v-on:click="updateItem(showItem)">変更</button>
-    <button v-on:click="closeBentoShowModal">閉じる</button> 
   </div>
+</div>
 </template>
 <script>
 import { defineComponent, computed } from 'vue'
 import { useStore } from 'vuex'
-import moment from 'moment'
-import { getDatabase, update, onValue } from "firebase/database"
-import { ref as fireDataRef } from "firebase/database"
 
 export default defineComponent({
-  // props: ["showListshowItem", "showModalFlag"],
   setup() {
     const store = useStore()
-    const db = getDatabase()
+    //storeから選択したitemであるshowItemを取得
     store.commit('updateLoadingFlag', true)
     console.log("start-loading", store.state.loadingFlag)
     const showItem= computed(() => {
+      console.log("showModal", store.state.item)
       return store.state.item
     })
-    const updateItem = (item) => {
-      console.log("updateItem", item)
 
-      //データ取得
-      const postData = {
-        date: item.date,
-        image: item.image,
-        menus: item.menus,
-        tastes: item.tastes,
-        point: item.point,
-        daily: item.daily,
-      }
-      
-      //db更新
-      const year = item.date.slice(0, 4)
-      const month = Number(moment(item.date).format("MM"))
-      const itemRef = fireDataRef(db, 'bentos/' + year + '/' + month + '/' + item.date);
-      onValue(itemRef, (snapshot) => {
-        const data = snapshot.val();
-        console.log("itemRef", data)
-        const updateKey= Object.keys(data)[0]
-        console.log("updateKey", updateKey)
-        const updates = {};
-        updates['/bentos/' + year + '/' + month + '/' + item.date + '/' + updateKey] = postData;
-        return update(fireDataRef(db), updates);
-      })
-      //モーダルを閉じる
-      store.commit('updateLoadingFlag', false)
-      store.commit('updateBentoShowModalFlag', false)
-    }
     const closeBentoShowModal = () => {
       store.commit('updateBentoShowModalFlag', false)
+      //showモーダルを閉じたら選択項目をリセットする
+      store.commit('getShowItem', "")
     }
-    // const item= reactive({
-    //   date: "",
-    //   image: "",
-    //   point: "",
-    //   daily: "",
-    //   star:""
-    // })
-    // if (props.showListItem){
-    //   console.log("item", props.showListItem)
-    // }
     
+    //編集ボタンを押したらBentoUpdate.vueを開く。showModalは閉じる
+    const openUpdateModal = () => {
+      // closeBentoShowModal
+      console.log("openUpdateModal", store.state.item)
+      // store.commit('getShowItem', "")
+      // console.log("openShowModal2", store.state.item)
+      store.commit('updateBentoUpdateModalFlag', true)
+      //storeのitem(選択項目)に再度同じitemを代入する。編集ページを2度開くとstoreのitemが変更されないため、再度変更をUpdateModal.vueのwatchに伝える。二回目開いたらupdateModalが初期化されるのバグ対応。
+      // const item= store.state.item
+      // store.commit('getShowItem', store.state.item)
+    }
     return {
       showItem,
-      updateItem,
-      closeBentoShowModal
+      openUpdateModal,
+      closeBentoShowModal,
     }
-    // console.log("ShowModalでprops.items", props.item)
-    // console.log("showModalFlag", props.showModalFlag)
   }   
 })
 
 </script>
 <style scoped>
-
+img {
+  object-fit: cover;
+  width: 100%;
+  height: 35vh;
+}
 </style>

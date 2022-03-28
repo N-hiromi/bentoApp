@@ -1,23 +1,25 @@
 <template>
 <div>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light" v-if="isLoggedIn">
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">ObentoApp</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse d-flex justify-content-end" id="navbarNav">
-        <ul class="navbar-nav">
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav text-start">
           <li class="nav-item">
-            <a class="btn btn-primary" data-bs-toggle="modal" href="#exampleModalToggle" role="button" v-on:click= "openRegisterModal">お弁当登録</a>
+            <a class="nav-link active" data-bs-toggle="modal" href="#firstCreateId" role="button" v-on:click= "openRegisterModal">お弁当登録</a>
           </li>
-          <li class="nav-item ms-3">
-            <button type="button" class="btn btn-primary" v-on:click="logout">ログアウト</button>
+          <li class="nav-item">
+            <a type="nav-link active" class="btn btn-primary" v-on:click="logout">ログアウト</a>
           </li>
         </ul>
       </div>
     </div>
   </nav>
+
 </div>
 </template>
 <script>
