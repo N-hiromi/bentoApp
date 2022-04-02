@@ -1,8 +1,8 @@
 <template>
   <div class="bento-list col-md-8 mx-auto">
     <div class="list-group" v-for="(item, itemKey) in items" :key="itemKey">
-      <a class="bento-list-card list-group-item list-group-item-action"  data-bs-toggle="modal" data-bs-target="#showModalId">
-        <div class="bento-list-item row" v-on:click="showBentoPage(item)">
+      <a class="bento-list-card list-group-item list-group-item-action" v-on:click="showBentoPage(item)">
+        <div class="bento-list-item row">
           <div class="bento-image col-4 col-sm-3">
             <img class="image" :src='item.image'  alt="image">
           </div>

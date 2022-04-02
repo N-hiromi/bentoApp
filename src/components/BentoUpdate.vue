@@ -1,6 +1,6 @@
 <template>
   <div>
-    <InputModal ref="childRef" v-bind:initItem="initItem" v-on:bentoSave= "bentoUpdate" v-bind:title="title" v-bind:firstId= "firstUpdateId" v-bind:secondId="secondUpdateId"/>
+    <InputModal ref="childRef" v-bind:initItem="initItem" v-on:bentoSave= "bentoUpdate" v-bind:title="title"/>
   </div>
 </template>
 <script>
@@ -21,8 +21,6 @@ export default defineComponent({
 
     //inputModalをcreateとupdateで使うため
     const title= "編集"
-    const firstUpdateId= "firstUpdateId"
-    const secondUpdateId= "secondUpdateId"
 
     const store = useStore()
     const db = getDatabase()
@@ -46,20 +44,22 @@ export default defineComponent({
       //menusとtastesが登録されていないitemを含めて全て対象。前に押したshowItemのmenus, tastesが次に押したUpdateModao内で残されないようにするため。
       initItem.menus.length= 0
       initItem.tastes.length= 0
-
-      console.log("watchShowITem", newValue)
-      initItem.weekEndFlag= newValue.weekEndFlag
-      initItem.date= newValue.date
-      initItem.image= newValue.image
-      initItem.daily= newValue.daily
-      initItem.point= newValue.point
-      initItem.star= newValue.star
-      //updateの時はmenusとtastesも渡す
-      if (newValue.menus) {
-        newValue.menus.forEach(element => initItem.menus.push(element))
-      }
-      if (newValue.tastes) {
-        newValue.tastes.forEach(element => initItem.tastes.push(element))
+      //defaultではstate.item= null。null出ない時(itemが選択された時のみ選択された値を代入する)
+      if (newValue !== null ) {
+        console.log("watchShowITem", newValue)
+        initItem.weekEndFlag= newValue.weekEndFlag
+        initItem.date= newValue.date
+        initItem.image= newValue.image
+        initItem.daily= newValue.daily
+        initItem.point= newValue.point
+        initItem.star= newValue.star
+        //updateの時はmenusとtastesも渡す
+        if (newValue.menus) {
+          newValue.menus.forEach(element => initItem.menus.push(element))
+        }
+        if (newValue.tastes) {
+          newValue.tastes.forEach(element => initItem.tastes.push(element))
+        }
       }
     })
     
@@ -107,12 +107,11 @@ export default defineComponent({
       //モーダルを閉じる
       store.commit('updateLoadingFlag', false)
       store.commit('updateBentoShowModalFlag', false)
-      menus= []
-      tastes.length= 0;
       const startUpdate= async ()=> {
         await updateItem()
         menus.length= 0
         tastes.length= 0
+        console.log("startUpdate", menus, tastes)
       }
       startUpdate()
     }
@@ -122,8 +121,6 @@ export default defineComponent({
       bentoUpdate,
       childRef,
       title,
-      firstUpdateId,
-      secondUpdateId,
     }
   }   
 })

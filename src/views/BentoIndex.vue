@@ -5,22 +5,20 @@
   <BentoUpdate v-show="showModalFlag.bentoUpdateModal" />
   <div class="select my-3">
     <div class="form-item d-inline-block" >
-    <select class="selectYear" name="year" v-model="selectYearMonth.year">
-      <option v-bind:value="today.year" selected>{{ today.year }}</option>
-      <option v-bind:value="today.year -n" v-for="n of 3" :key="n">{{ today.year -n}}</option>
-    </select>
+      <select class="selectYear" name="year" v-model="selectYearMonth.year">
+        <option v-bind:value="today.year" selected>{{ today.year }}</option>
+        <option v-bind:value="today.year -n" v-for="n of 3" :key="n">{{ today.year -n}}</option>
+      </select>
+    </div>
+    <div class="form-item ms-3 d-inline-block">
+      <select class="selectMonth" name="month" v-model="selectYearMonth.month">
+        <option hidden>月を選択</option>
+        <option v-bind:value="n" v-for="n of 12" :key="n">{{ n +"月" }}</option>
+      </select>
+    </div>
   </div>
-  <div class="form-item ms-3 d-inline-block">
-    <select class="selectMonth" name="month" v-model="selectYearMonth.month">
-      <option hidden>月を選択</option>
-      <option v-bind:value="n" v-for="n of 12" :key="n">{{ n +"月" }}</option>
-    </select>
-  </div>
-  </div>
-  
-  
   <BentoList v-bind:theads="theads" v-bind:items="items" />
-  <BentoShowModal v-show="showModalFlag.bentoShowModal" v-bind:showModalFlag="showModalFlag.bentoShowModal"/>
+  <BentoShowModal v-if="showModalFlag.bentoShowModal" v-bind:showModalFlag="showModalFlag.bentoShowModal"/>
 </div>
 </template>
 <script>

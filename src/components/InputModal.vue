@@ -1,88 +1,90 @@
 <template>
-  <div class="modal fade" v-bind:id="firstId" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalToggleLabel">{{ title }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" v-on:click="closeBentoCreateModal"></button>
+<div class="inputModal">
+  <div v-show="openModal" class="modal-background">
+    <div class="modal-contents container p-4 col-sm-6">
+      <div class="row">
+        <h5 class="d-block col-6 text-start">{{ title }}</h5>
+        <div class="col-6 text-end">
+          <button type="button" class="btn-close" aria-label="Close" v-on:click="closeBentoCreateModal"></button>
+        </div>
+      </div>
+      <div class="menu-form">
+        <div class="date-star row">
+          <div class="form-item col-5">
+            <label for="date">日付</label>
+            <input type="date" class="form-control" v-model="inputItem.date">
           </div>
-          <div class="modal-body">
-            <div class="menu-form">
-              <div class="date-star row">
-                <div class="form-item col-5">
-                  <label for="date">日付</label>
-                  <input type="date" class="form-control" v-model="inputItem.date">
-                </div>
-                <div class="form-item col-4">
-                  <label for="star">評価</label>
-                  <select class="form-select" name="star" v-model="inputItem.star">
-                    <option value="1">★</option>
-                    <option value="2">★★</option>
-                    <option value="3">★★★</option>
-                    <option value="4">★★★★</option>
-                    <option value="5">★★★★★</option>
-                  </select>
-                </div>
-                <div class="weekend-select col mt-4">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" v-model="inputItem.weekEndFlag" id="flexCheckDefault">
-                    <label class="form-check-label" for="flexCheckDefault">休日</label>
-                  </div>
-                </div>
-              </div>
-              <div class="form-item">
-                <label for="image">画像</label>
-                <input class="form-control" type="file" id="file" accept="image/*" capture="environment" v-on:change="setImage">
-              </div>
-              <div class="form-item">
-                <label for="point">ワンポイント</label>
-                <textarea class="form-control" name="point" rows="3" v-model="inputItem.point"></textarea>
-              </div>
-              <div class="form-item">
-                <label for="daily">日記</label>
-                <textarea class="form-control" name="daily" id="" rows="3" v-model="inputItem.daily"></textarea>
-              </div>
+          <div class="form-item col-4">
+            <label for="star">評価</label>
+            <select class="form-select" name="star" v-model="inputItem.star">
+              <option value="1">★</option>
+              <option value="2">★★</option>
+              <option value="3">★★★</option>
+              <option value="4">★★★★</option>
+              <option value="5">★★★★★</option>
+            </select>
+          </div>
+          <div class="weekend-select col mt-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" v-model="inputItem.weekEndFlag" id="flexCheckDefault">
+              <label class="form-check-label" for="flexCheckDefault">休日</label>
             </div>
           </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" v-on:click="closeBentoCreateModal">やめる</button>
-          <button class="btn btn-primary" v-bind:data-bs-target="'#' +secondId" data-bs-toggle="modal" data-bs-dismiss="modal">次へ</button>
         </div>
+        <div class="form-item">
+          <label for="image">画像</label>
+          <input class="form-control" type="file" id="file" accept="image/*" capture="environment" v-on:change="setImage">
+        </div>
+        <div class="form-item">
+          <label for="point">ワンポイント</label>
+          <textarea class="form-control" name="point" rows="3" v-model="inputItem.point"></textarea>
+        </div>
+        <div class="form-item">
+          <label for="daily">日記</label>
+          <textarea class="form-control" name="daily" id="" rows="3" v-model="inputItem.daily"></textarea>
+        </div>
+      </div>
+      <div class="text-end mt-3">
+        <button type="button" class="btn btn-secondary" v-on:click="closeBentoCreateModal">やめる</button>
+        <button class="btn btn-primary ms-3" v-on:click="openMenuModal= true; openModal= false;">次へ</button>
       </div>
     </div>
   </div>
-  <div class="modal fade" v-bind:id="secondId" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalToggleLabel2">メニュー登録</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" v-on:click="closeBentoCreateModal"></button>
+  
+  <teleport to="body">
+    <div v-if="openMenuModal" class="modal-background">
+      <div class="modal-contents container p-4 col-sm-6">
+        <div class="row">
+          <h5 class="d-block col-6 text-start">メニュー登録</h5>
+          <div class="col-6 text-end">
+            <button type="button" class="btn-close" aria-label="Close" v-on:click="closeBentoCreateModal"></button>
+          </div>
         </div>
-        <div class="modal-body">
+        <div class="">
           <div class="menu-form">
             <div class="form-item col-8">
               <label for="name">メニュー</label>
-              <input class="form-control" type="text" id="name" v-model="menuForm">
+              <input class="form-control" type="text" id="menu" v-model="menuForm">
             </div>
             <label for="name">調味料</label>
             <div class="taste-form row">
               <div class="col-6" v-for="(tasteForm, tasteIndex) in tasteForms" :key="tasteIndex">
-                <div class="form-trash row">
+                <div class="row">
                   <div class="form-item col-10 pb-2">
-                    <input class="form-control" type="text" id="name" v-model="tasteForms[tasteIndex]">
+                    <input class="form-control" type="text" id="taste" v-model="tasteForms[tasteIndex]">
                   </div>
                   <a class="deleteTasteForm ps-1 mt-3 col-2" v-on:click="deleteTasteForm(tasteIndex)"><font-awesome-icon icon="trash-can" /></a>
                 </div>
               </div>
             </div>
             <button class="btn btn-primary"  v-on:click="addTasteForm">調味料追加</button>
-            <button class="btn btn-primary" v-on:click="showMenu">メニューを登録</button>
+            <button class="btn btn-primary ms-3" v-on:click="showMenu">メニューを登録</button>
           </div>
-          <div v-if="inputItem.menus !== []" class="update-menu-table manu-table">
+          <div v-if="inputItem.menus[0]" class="update-menu-table manu-table">
             <dl v-for="(menu, menuIndex) in inputItem.menus[0]" :key="menuIndex">
               <dt>{{ menu }}<a class="deleteMenu d-inline ps-3 mt-3 col-2" v-on:click="deleteUpdateMenu(menuIndex)"><font-awesome-icon icon="trash-can" /></a></dt>
-              <dd>
-                <p class="d-inline ps-2" v-for="(taste, tasteIndex) in inputItem.tastes[0][menuIndex]" :key="tasteIndex">{{ taste }}</p>
+              <dd v-if="inputItem.tastes[0]">
+                <p class="d-inline me-2" v-for="(taste, tasteIndex) in inputItem.tastes[0][menuIndex]" :key="tasteIndex">{{ taste }}</p>
               </dd>
             </dl>
           </div>
@@ -95,22 +97,27 @@
             </dl>
           </div>
         </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" v-bind:data-bs-target='"#"+ firstId' data-bs-toggle="modal" data-bs-dismiss="modal">戻る</button>
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" v-on:click="bentoSave">登録</button>
+        <div class="text-end mt-3">
+          <button class="btn btn-secondary"  v-on:click="openMenuModal= false; openModal= true;">戻る</button>
+          <button type="button" class="btn btn-primary ms-3" v-on:click="bentoSave">登録</button>
         </div>
       </div>
-    </div>
-  </div>
+      </div>
+  </teleport>
+
+</div>
+  
 </template>
 <script>
 import { defineComponent, reactive, ref, watch, defineExpose} from 'vue'
 import { useStore } from 'vuex'
 
 export default defineComponent({
-  props: ["initItem", "title", "firstId", "secondId"],
+  props: ["initItem", "title"],
   emits: ["bentoSave"],
   setup(props, context) {
+    const openModal= ref(true)
+    const openMenuModal= ref(false)
     const store = useStore()
     const menuForm= ref("")
     const tasteForms= reactive([""])
@@ -149,6 +156,9 @@ export default defineComponent({
     }
 
     const closeBentoCreateModal= () => {
+      //modalはdefaultで開いたまんま(createやupdateModalが閉じたら一緒に閉じるから)。menuModalのみ閉じる。
+      openModal.value= true
+      openMenuModal.value= false
       //formの初期化
       inputItem.weekEndFlag= false
       inputItem.date= ""
@@ -190,6 +200,7 @@ export default defineComponent({
         menu: "",
         tastes: []
       }
+      console.log("menuLists1", menuLists.value)
       menuObject.menu= menuForm.value
       for (const tasteForm of tasteForms){
         menuObject.tastes.push(tasteForm)
@@ -211,41 +222,47 @@ export default defineComponent({
     //menuとtasteの削除
     const deleteMenu= (index)=> {
       menuLists.value.splice(index, 1)
+      console.log("新しいmenu削除", menuLists.value)
     }
     //元々登録されていたmenuとtasteを削除
     const deleteUpdateMenu= (index)=> {
+      inputItem.tastes.splice(index, 1)
       inputItem.menus[0].splice(index, 1)
-      inputItem.tastes[0].splice(index, 1)
+      console.log("既存のmenuとtastes削除", inputItem.menus[0], inputItem.tastes)
     }
 
     //モーダル内の情報をcreateかupdateModalへ渡す。
     const bentoSave= async ()=> {
       //updateの場合のみcreate済みのmenuとtasteを格納
       if (inputItem.menus[0]) {
-        console.log("inputItem.menus", inputItem.menus)
-        console.log("inputItem.menus[0]", inputItem.menus[0])
-        console.log("menuは空？", menus)
         inputItem.menus[0].forEach(element => menus.push(element))
+      }
+      if (inputItem.tastes[0]) {
         inputItem.tastes[0].forEach(element=> tastes.push(element))
       }
 
       //updateで新しく作成したmenuとtasteの格納
+      console.log("menus1", menus, tastes)
       for (const menuList of menuLists.value){
+        console.log("menuList", menuList)
         menus.push(menuList.menu)
         tastes.push(menuList.tastes)
+        // for (const taste of menuList.tastes) {
+        //   tastes.push(taste)
+        // }
       }
       menuLists.value.length= 0
+      console.log("menuLists.value", menuLists.value)
       console.log("menusとtastes2", menus, tastes)
       console.log("bentoSave-inputItem", inputItem.menus, inputItem.tastes)
       context.emit('bentoSave', inputItem, menus, tastes)
-      // menus.length= 0
-      // tastes.length= 0
-      
     }
     defineExpose({
       closeBentoCreateModal,
     })
     return {
+      openModal,
+      openMenuModal,
       inputItem,
       menuForm,
       tasteForms,

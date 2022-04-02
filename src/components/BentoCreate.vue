@@ -1,6 +1,6 @@
 <template>
 <div class="bento-create-modal">
-  <InputModal ref="childRef" v-bind:initItem="initItem" v-on:bentoSave= "bentoSave" v-bind:title="title" v-bind:firstId= "firstCreateId" v-bind:secondId="secondCreateId"/>
+  <InputModal ref="childRef" v-bind:initItem="initItem" v-on:bentoSave= "bentoSave" v-bind:title="title"/>
 </div>
 </template>
 <script>
@@ -26,8 +26,7 @@ export default defineComponent({
     const title= "新規登録"
     const store = useStore()
     const now= moment().format('YYYY-MM-DD')
-    const firstCreateId= "firstCreateId"
-    const secondCreateId= "secondCreateId"
+
     const initItem= reactive({
       weekEndFlag: false,
       date: now,
@@ -42,6 +41,7 @@ export default defineComponent({
     //showMenuはmenuFormとtasteFormsの値取得、menuListsへの登録と表示
     //モーダル内の情報をdatabaseへ登録。登録内容を親に渡す。
     const bentoSave= async (item, menus, tastes)=> {
+      console.log("menusとtastes", menus, tastes)
       //登録欄の年と日付を取得
       const year = item.date.slice(0, 4)
       const month = Number(moment(item.date).format("MM"))
@@ -109,8 +109,6 @@ export default defineComponent({
       bentoSave,
       childRef,
       title,
-      firstCreateId,
-      secondCreateId
     }
   }
 })

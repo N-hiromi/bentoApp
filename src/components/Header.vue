@@ -10,7 +10,7 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav text-start">
           <li class="nav-item">
-            <a class="nav-link active" data-bs-toggle="modal" href="#firstCreateId" role="button" v-on:click= "openRegisterModal">お弁当登録</a>
+            <a class="nav-link active" role="button" v-on:click= "openRegisterModal">お弁当登録</a>
           </li>
           <li class="nav-item">
             <a type="nav-link active" class="btn btn-primary" v-on:click="logout">ログアウト</a>
@@ -27,6 +27,7 @@ import { defineComponent, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { getAuth, signOut } from "firebase/auth";
+
 
 export default defineComponent({
   setup() {
