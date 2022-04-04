@@ -188,6 +188,7 @@ export default defineComponent({
       //modalを閉じる
       store.commit('updateBentoCreateModalFlag', false)
       store.commit('updateBentoUpdateModalFlag', false)
+      store.commit('updateLoadingFlag', false)
     }
 
     //登録途中のtasteFormを削除するボタン
@@ -212,8 +213,6 @@ export default defineComponent({
       menuForm.value=""
       tasteForms.length= 0
       tasteForms[0]= ""
-      // menuLists.value.splice(1)
-      
     }
     //tasteフォームを増やす
     const addTasteForm= ()=> {
@@ -226,7 +225,7 @@ export default defineComponent({
     }
     //元々登録されていたmenuとtasteを削除
     const deleteUpdateMenu= (index)=> {
-      inputItem.tastes.splice(index, 1)
+      inputItem.tastes[0].splice(index, 1)
       inputItem.menus[0].splice(index, 1)
       console.log("既存のmenuとtastes削除", inputItem.menus[0], inputItem.tastes)
     }
@@ -247,9 +246,6 @@ export default defineComponent({
         console.log("menuList", menuList)
         menus.push(menuList.menu)
         tastes.push(menuList.tastes)
-        // for (const taste of menuList.tastes) {
-        //   tastes.push(taste)
-        // }
       }
       menuLists.value.length= 0
       console.log("menuLists.value", menuLists.value)

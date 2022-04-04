@@ -10,6 +10,8 @@ import { useStore } from 'vuex'
 import moment from 'moment'
 import { getDatabase, update, get, child } from "firebase/database"
 import { ref as fireDataRef } from "firebase/database"
+import { getStorage, deleteObject, uploadBytes, getDownloadURL} from "firebase/storage"
+import { ref as fireStorageRef} from "firebase/storage"
 
 export default defineComponent({
   components: {
@@ -65,7 +67,14 @@ export default defineComponent({
     
     
     const bentoUpdate = async (item, menus, tastes) => {
-      console.log("bentoUpdate", item, menus, tastes)
+      //登録モーダルを閉じてローディングスタート
+      store.commit('updateBentoUpdateModalFlag', false)
+      store.commit('updateBentoShowModalFlag', false)
+      store.commit('updateLoadingFlag', true)
+
+      const userId= store.state.idToken.uid
+      const year = item.date.slice(0, 4)
+      const month = Number(moment(item.date).format("MM"))
       //inputModal.vueからデータ取得
       const postData = {
         weekEndFlag: Boolean(item.weekEndFlag),
@@ -79,39 +88,83 @@ export default defineComponent({
       }
       console.log("postData", postData)
       
+      //画像の更新があった場合
+      const storage = getStorage();
+      if (item.image && item.image !== getShowItem.value.image) {
+        //画像をstorageへ保存。
+        //①フルパスの取得
+        const storageRef = fireStorageRef(storage,'bentos/' + userId + '/' + year + '/'+ month + '/'+ `${item.date}.jpg`)
+        // Delete the file
+        const deleteImage= async () => {
+          deleteObject(storageRef).then(() => {
+          console.log("既存画像を削除しました")
+        }).catch((error) => {
+          console.log(error)
+        });
+        }
+        
+        //②storageへアップロード
+        console.log("item.image", item.image)
+        const uploadImage= async () => {
+          uploadBytes(storageRef, item.image).then(() => {
+            console.log('Uploaded a blob or file!', item.image);
+          });
+        }
+        //③画像のダウンロードとitem.imageへurlを格納
+        const downloadUrl= async () => {
+          getDownloadURL(fireStorageRef(storage, 'bentos/' + userId + '/' + year + '/'+ month + '/'+ `${item.date}.jpg`))
+          .then((url) => {
+            postData.image= url
+            console.log("item.image1", url)
+          })
+          .catch((error) => {
+            console.log("画像が表示できませんでした", error)
+          });
+        }
+        const startUpdateImage= async () => {
+          await deleteImage()
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          await uploadImage()
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          await downloadUrl()
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+        }
+        startUpdateImage()
+      }
       //db更新
-      const userId= store.state.idToken.uid
-      const year = item.date.slice(0, 4)
-      const month = Number(moment(item.date).format("MM"))
       //ただreturn Object.keys(data)[0]しただけだと、updateKeyにObject.keys(data)[0]を代入できない
       const updateKey= await new Promise(function(resolve){
         const dbRef = fireDataRef(db);
         get(child(dbRef, 'bentos/' + userId + '/'+ year + '/' + month + '/' + item.date)).then((snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          console.log(data);
-          console.log("関数内のkey", Object.keys(data)[0])
-          resolve(Object.keys(data)[0])
-        } else {
-          console.log("No data available");
-        }
+          if (snapshot.exists()) {
+            const data = snapshot.val();
+            console.log(data);
+            console.log("関数内のkey", Object.keys(data)[0])
+            resolve(Object.keys(data)[0])
+          } else {
+            console.log("No data available");
+          }
+        })
       })
-      })
-      const updateItem= () => {
+      const updateItem= async () => {
         const updates = {};
         updates['/bentos/' + userId + '/' + year + '/' + month + '/' + item.date + '/' + updateKey] = postData;
-        childRef.value.closeBentoCreateModal()
         return update(fireDataRef(db), updates);
       }
       
-      //モーダルを閉じる
-      store.commit('updateLoadingFlag', false)
-      store.commit('updateBentoShowModalFlag', false)
-      const startUpdate= async ()=> {
-        await updateItem()
+      const initializeMenuTaste= async ()=> {
         menus.length= 0
         tastes.length= 0
+        childRef.value.closeBentoCreateModal()
         console.log("startUpdate", menus, tastes)
+      }
+      
+      const startUpdate= async ()=> {
+        if (item.image && item.image !== getShowItem.value.image) {
+          await new Promise((resolve) => setTimeout(resolve, 14000));
+        }
+        await updateItem()
+        await initializeMenuTaste()
       }
       startUpdate()
     }

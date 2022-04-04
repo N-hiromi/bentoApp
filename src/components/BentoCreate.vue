@@ -41,7 +41,6 @@ export default defineComponent({
     //showMenuはmenuFormとtasteFormsの値取得、menuListsへの登録と表示
     //モーダル内の情報をdatabaseへ登録。登録内容を親に渡す。
     const bentoSave= async (item, menus, tastes)=> {
-      console.log("menusとtastes", menus, tastes)
       //登録欄の年と日付を取得
       const year = item.date.slice(0, 4)
       const month = Number(moment(item.date).format("MM"))
@@ -94,13 +93,12 @@ export default defineComponent({
       //モーダル内の表示を削除
       const startSave= async ()=> {
         await uploadImage()
-        await new Promise((resolve) => setTimeout(resolve, 6000));
+        await new Promise((resolve) => setTimeout(resolve, 3000));
         await downloadUrl()
         await new Promise((resolve) => setTimeout(resolve, 3000));
         await saveItem()
-        await new Promise((resolve) => setTimeout(resolve, 6000));
+        await new Promise((resolve) => setTimeout(resolve, 3000));
         await childRef.value.closeBentoCreateModal()
-        await store.commit('updateLoadingFlag', false)
       }
       startSave()
     }
