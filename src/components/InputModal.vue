@@ -33,7 +33,7 @@
         </div>
         <div class="form-item">
           <label for="image">画像</label>
-          <input class="form-control" type="file" id="file" accept="image/*" capture="environment" v-on:change="setImage">
+          <input class="form-control" type="file" id="file" accept="image/*" v-on:change="setImage">
         </div>
         <div class="form-item">
           <label for="point">ワンポイント</label>
