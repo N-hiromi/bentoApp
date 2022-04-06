@@ -76,7 +76,7 @@ export default defineComponent({
       const saveItem= async () => {
         console.log("userId", userId)
         push(fireDataRef(db, 'bentos/' + userId + '/' + year + `/`+ month + `/`+item.date),{
-          weekEndFlag: Boolean(item.week),
+          weekEndFlag: Boolean(item.weekEndFlag),
           date: String(item.date),
           image: String(item.image),
           daily: String(item.daily),

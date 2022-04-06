@@ -3,20 +3,12 @@ import { createStore } from 'vuex'
 export default createStore({
   state: {
     idToken: null,
-    item: {
-      weekEndFlag: "",
-      date: "",
-      image: "",
-      daily: "",
-      point: "",
-      star: 0,
-      menus: [],
-      tastes: [],
-    },
+    item: null,
     loadingFlag: false,
     bentoCreateModalFlag: false,
     bentoShowModalFlag: false,
     bentoUpdateModalFlag: false,
+    weekEndFlag: false,
   },
   mutations: {
     updateIdToken(state, idToken){
@@ -43,6 +35,10 @@ export default createStore({
       state.bentoUpdateModalFlag= updateFlag
       console.log("bentoUpdateModalFlag", state.bentoUpdateModalFlag)
     },
+    updateWeekEndFlag(state, weekEndFlag){
+      state.weekEndFlag= weekEndFlag
+      console.log("weekEndFlag", state.weekEndFlag)
+    },
   },
   getters: {
     idToken: state => state.idToken,
@@ -50,6 +46,7 @@ export default createStore({
     loadingFlag: state => state.loadingFlag,
     bentoCreateModalFlag: state => state.bentoCreateModalFlag,
     bentoShowModalFlag: state => state.bentoShowModalFlag,
-    bentoUpdateModalFlag: state => state.bentoUpdateModalFlag
+    bentoUpdateModalFlag: state => state.bentoUpdateModalFlag,
+    weekEndFlag: state => state.weekEndFlag
   }
 })

@@ -9,10 +9,16 @@
           <div class="list-index col-8 col-sm-9 row ps-1 text-start">
             <p class="d-inline mb-0 pb-0">{{ item.date }}</p>
             <!-- <a class="deleteTasteForm ps-1 mt-3 col-2 d-inline" v-on:click="deleteItem(item)"><font-awesome-icon icon="trash-can" /></a> -->
-            <p class="col-12 item-point">{{ item.point }}</p>
-            <div class="d-inline text-end" >
-              <p class="d-inline text-end" v-for="n of item.star" :key="n">★</p>
+            <div class="list-text col-12">
+              <div v-if="item.menus" class="item-menus my-2 col-12">
+                <p class="d-inline me-2" v-for="(menu, menuKey) in item.menus[0]" :key=menuKey>{{ menu }}</p>
+              </div>
+              <p class="item-point">{{ item.point }}</p>
             </div>
+            <div class="d-inline text-end" >
+                <p class="d-inline text-end star" v-for="n of item.star" :key="n">★</p>
+              </div>
+            
           </div>
         </div>
       </a>
@@ -92,12 +98,18 @@ export default defineComponent({
   object-fit: cover;
   height: 22vh;
   width: 100%;
+  border-radius: 5%;
+  border-color: #fffaf0;
+  border-width: thin;
   }
   .list-index {
     height: 18vh;
   }
-  .item-point {
-    height: 12vh;
+  .list-text {
+    height: 15vh;
+  }
+  .star {
+    color: #ff4500;
   }
   }
 }

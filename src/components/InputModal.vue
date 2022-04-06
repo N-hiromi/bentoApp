@@ -67,6 +67,7 @@
               <input class="form-control" type="text" id="menu" v-model="menuForm">
             </div>
             <label for="name">調味料</label>
+            <a class="addTasteForm ms-2" v-on:click="addTasteForm"><font-awesome-icon icon="plus" /></a>
             <div class="taste-form row">
               <div class="col-6" v-for="(tasteForm, tasteIndex) in tasteForms" :key="tasteIndex">
                 <div class="row">
@@ -77,8 +78,7 @@
                 </div>
               </div>
             </div>
-            <button class="btn btn-primary"  v-on:click="addTasteForm">調味料追加</button>
-            <button class="btn btn-primary ms-3" v-on:click="showMenu">メニューを登録</button>
+            <button class="btn btn-primary" v-on:click="showMenu">メニューを登録</button>
           </div>
           <div v-if="inputItem.menus[0]" class="update-menu-table manu-table">
             <dl v-for="(menu, menuIndex) in inputItem.menus[0]" :key="menuIndex">
@@ -241,16 +241,13 @@ export default defineComponent({
       }
 
       //updateで新しく作成したmenuとtasteの格納
-      console.log("menus1", menus, tastes)
       for (const menuList of menuLists.value){
         console.log("menuList", menuList)
         menus.push(menuList.menu)
         tastes.push(menuList.tastes)
       }
       menuLists.value.length= 0
-      console.log("menuLists.value", menuLists.value)
-      console.log("menusとtastes2", menus, tastes)
-      console.log("bentoSave-inputItem", inputItem.menus, inputItem.tastes)
+      console.log("bentoSave", inputItem, inputItem.weekEndFlag)
       context.emit('bentoSave', inputItem, menus, tastes)
     }
     defineExpose({
