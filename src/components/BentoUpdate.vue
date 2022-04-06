@@ -23,12 +23,9 @@ export default defineComponent({
 
     //inputModalをcreateとupdateで使うため
     const title= "編集"
-
     const store = useStore()
     const db = getDatabase()
     store.commit('updateLoadingFlag', true)
-    console.log("start-loading", store.state.loadingFlag)
-
     const initItem= reactive({
       weekEndFlag: "",
       date: "",
@@ -48,7 +45,6 @@ export default defineComponent({
       initItem.tastes.length= 0
       //defaultではstate.item= null。null出ない時(itemが選択された時のみ選択された値を代入する)
       if (newValue !== null ) {
-        console.log("watchShowITem", newValue)
         initItem.weekEndFlag= newValue.weekEndFlag
         initItem.date= newValue.date
         initItem.image= newValue.image
@@ -104,7 +100,6 @@ export default defineComponent({
         }
         
         //②storageへアップロード
-        console.log("item.image", item.image)
         const uploadImage= async () => {
           uploadBytes(storageRef, item.image).then(() => {
             console.log('Uploaded a blob or file!', item.image);
@@ -115,7 +110,6 @@ export default defineComponent({
           getDownloadURL(fireStorageRef(storage, 'bentos/' + userId + '/' + year + '/'+ month + '/'+ `${item.date}.jpg`))
           .then((url) => {
             postData.image= url
-            console.log("item.image1", url)
           })
           .catch((error) => {
             console.log("画像が表示できませんでした", error)
@@ -138,8 +132,6 @@ export default defineComponent({
         get(child(dbRef, 'bentos/' + userId + '/'+ year + '/' + month + '/' + item.date)).then((snapshot) => {
           if (snapshot.exists()) {
             const data = snapshot.val();
-            console.log(data);
-            console.log("関数内のkey", Object.keys(data)[0])
             resolve(Object.keys(data)[0])
           } else {
             console.log("No data available");
@@ -156,7 +148,6 @@ export default defineComponent({
         menus.length= 0
         tastes.length= 0
         childRef.value.closeBentoCreateModal()
-        console.log("startUpdate", menus, tastes)
       }
       
       const startUpdate= async ()=> {

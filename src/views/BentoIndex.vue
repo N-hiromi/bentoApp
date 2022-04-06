@@ -58,8 +58,7 @@ export default defineComponent({
     const computedWeekEnd= computed( () => {
       return weekEndFlag.value
     })
-    watch(computedWeekEnd, (newValue, oldValue) => {
-      console.log("IndexweekEndFlag", newValue, oldValue)
+    watch(computedWeekEnd, (newValue) => {
       store.commit('updateWeekEndFlag', newValue)
     })
 
@@ -84,8 +83,7 @@ export default defineComponent({
     watch(getBentoShowModalFlag, (newValue) => {
       showModalFlag.bentoShowModal= newValue
     })
-    watch(getBentoUpdateModalFlag, (newValue, oldValue) => {
-      console.log("getBentoUpdateModalFlag", newValue, oldValue)
+    watch(getBentoUpdateModalFlag, (newValue) => {
       showModalFlag.bentoUpdateModal= newValue
     })
 
@@ -97,8 +95,7 @@ export default defineComponent({
     const getLoadingFlag= computed(() => {
       return store.getters['loadingFlag']
     })
-    watch(getLoadingFlag, (newValue, oldValue) => {
-      console.log("watchLoading", newValue, oldValue)
+    watch(getLoadingFlag, (newValue) => {
       loadingFlag.value= newValue
     })
 
@@ -133,7 +130,6 @@ export default defineComponent({
           const values= dataArrays.map(dataArray => dataArray[0])
           //dbに編集や削除などで変更があった場合、表示するitemsを初期化して、再度変更されたdb全てを取得する
           items.length= 0
-          console.log("values", values)
           //itemsを降順に並び替え
           for (const value of values.slice().sort((a, b) => {return (a.date < b.date ? 1 : -1)})){
             items.push(value)
@@ -142,11 +138,9 @@ export default defineComponent({
           //filteredItemsはyearMonthを選び直すたびに初期化
           filteredItems.length= 0
           const weekEndItems= items.filter(item => item.weekEndFlag == computedWeekEnd.value)
-          console.log("weekEndITems", weekEndItems)
           for (const weekEndItem of weekEndItems) {
             filteredItems.push(weekEndItem)
           }
-          console.log("filteredItems", filteredItems)
         }else{
           //データが無いselectdeYearMonthが選ばれたら、itemsを初期化して何も表示しない
           items.length=0

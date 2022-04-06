@@ -26,16 +26,13 @@ export default defineComponent({
         .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
-        console.log("userCredential", user)
         store.commit('updateIdToken', user);
         router.push('/');
-        // ...
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
           console.log(errorCode, errorMessage)
-            // ..
       });
     }
     return {

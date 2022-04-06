@@ -9,7 +9,7 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav text-start">
-          <li class="nav-item">
+          <li class="nav-item header-item">
             <a class="nav-link active" role="button" v-on:click= "openRegisterModal">お弁当登録</a>
           </li>
           <li class="nav-item">
@@ -27,7 +27,6 @@ import { defineComponent, computed } from 'vue'
 import { useStore } from 'vuex'
 import { useRouter } from 'vue-router'
 import { getAuth, signOut } from "firebase/auth";
-
 
 export default defineComponent({
   setup() {
@@ -84,4 +83,8 @@ img {
     width: 5%;
     height: 5%;
   }
+a:hover {
+  color: yellow !important;
+}
+
 </style>

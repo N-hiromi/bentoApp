@@ -78,9 +78,9 @@
                 </div>
               </div>
             </div>
-            <button class="btn btn-primary" v-on:click="showMenu">メニューを登録</button>
+            <button class="btn btn-primary mt-2" v-on:click="showMenu">メニューを登録</button>
           </div>
-          <div v-if="inputItem.menus[0]" class="update-menu-table manu-table">
+          <div v-if="inputItem.menus[0]" class="update-menu-table manu-table mt-3">
             <dl v-for="(menu, menuIndex) in inputItem.menus[0]" :key="menuIndex">
               <dt>{{ menu }}<a class="deleteMenu d-inline ps-3 mt-3 col-2" v-on:click="deleteUpdateMenu(menuIndex)"><font-awesome-icon icon="trash-can" /></a></dt>
               <dd v-if="inputItem.tastes[0]">
@@ -88,7 +88,7 @@
               </dd>
             </dl>
           </div>
-          <div class="create-menu-table menu-table">
+          <div class="create-menu-table menu-table mt-3">
             <dl v-for="(menuList, menuListIndex) in menuLists" :key="menuListIndex">
               <dt>{{ menuList.menu }}<a class="deleteMenuForm d-inline ps-3 mt-3 col-2" v-on:click="deleteMenu(menuListIndex)"><font-awesome-icon icon="trash-can" /></a></dt>
               <dd>
@@ -137,8 +137,7 @@ export default defineComponent({
       tastes: props.initItem.tastes,
     })
     //initItemが変わったら初期値に再代入。createなら空文字と今日の日付。updateModalならShowItem
-    watch(props.initItem, (newValue, oldValue) => {
-      console.log("propsInputModal", newValue, oldValue)
+    watch(props.initItem, (newValue) => {
       inputItem.weekEndFlag= newValue.weekEndFlag
       inputItem.date= newValue.date
       inputItem.image= newValue.image
@@ -166,14 +165,11 @@ export default defineComponent({
       inputItem.daily= ""
       inputItem.point= ""
       inputItem.star= 0
-      console.log("closeBentoCreateModal", inputItem.menus)
       //create-menu部分が空になる
       menuLists.value.length= 0
       if (inputItem.menus !== "") {
-        console.log("menusとtastes", inputItem.menus, inputItem.tastes)
         inputItem.menus= []
         inputItem.tastes= []
-        console.log("menusとtastes2", inputItem.menus, inputItem.tastes)
       }
       
       //登録画像の削除
@@ -182,7 +178,6 @@ export default defineComponent({
       //調味料登録フォームを1個にする
       tasteForms.length= 0
       tasteForms[0]= ""
-      console.log("初期化完了")
       //store.itemを消去。Listクリックでstore.stateが再代入されたときにまたwatchするように
       store.commit('getShowItem', "")
       //modalを閉じる
@@ -201,13 +196,11 @@ export default defineComponent({
         menu: "",
         tastes: []
       }
-      console.log("menuLists1", menuLists.value)
       menuObject.menu= menuForm.value
       for (const tasteForm of tasteForms){
         menuObject.tastes.push(tasteForm)
       }
       menuLists.value.push(menuObject)
-      console.log("menuLists", menuLists.value)
       
       //登録後、フォームは初期化
       menuForm.value=""
@@ -221,13 +214,11 @@ export default defineComponent({
     //menuとtasteの削除
     const deleteMenu= (index)=> {
       menuLists.value.splice(index, 1)
-      console.log("新しいmenu削除", menuLists.value)
     }
     //元々登録されていたmenuとtasteを削除
     const deleteUpdateMenu= (index)=> {
       inputItem.tastes[0].splice(index, 1)
       inputItem.menus[0].splice(index, 1)
-      console.log("既存のmenuとtastes削除", inputItem.menus[0], inputItem.tastes)
     }
 
     //モーダル内の情報をcreateかupdateModalへ渡す。
@@ -242,12 +233,10 @@ export default defineComponent({
 
       //updateで新しく作成したmenuとtasteの格納
       for (const menuList of menuLists.value){
-        console.log("menuList", menuList)
         menus.push(menuList.menu)
         tastes.push(menuList.tastes)
       }
       menuLists.value.length= 0
-      console.log("bentoSave", inputItem, inputItem.weekEndFlag)
       context.emit('bentoSave', inputItem, menus, tastes)
     }
     defineExpose({

@@ -27,7 +27,6 @@ export default defineComponent({
       .then((userCredential) => {
       // Signed in
       const user = userCredential.user;
-      console.log(user)
       store.commit('updateIdToken', user)
       router.push('/')
     })

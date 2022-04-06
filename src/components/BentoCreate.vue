@@ -4,7 +4,7 @@
 </div>
 </template>
 <script>
-import { defineComponent, reactive, ref } from 'vue'
+import { defineComponent, reactive, ref, computed } from 'vue'
 import moment from 'moment'
 import 'moment/locale/ja'
 moment.locale('ja')
@@ -26,16 +26,18 @@ export default defineComponent({
     const title= "新規登録"
     const store = useStore()
     const now= moment().format('YYYY-MM-DD')
-
+    const todayWeekEnd= computed(() => {
+      return store.getters['weekEndFlag']
+    }) 
     const initItem= reactive({
-      weekEndFlag: false,
+      weekEndFlag: todayWeekEnd,
       date: now,
       image: "",
       daily: "",
       point: "",
       star: 0,
-      menus: "",
-      tastes: ""
+      menus: [],
+      tastes: []
     })
 
     //showMenuはmenuFormとtasteFormsの値取得、menuListsへの登録と表示
@@ -46,8 +48,7 @@ export default defineComponent({
       const month = Number(moment(item.date).format("MM"))
       //保存する人のtokenを取得
       const userId= store.state.idToken.uid
-      //登録モーダルを閉じてローディング開始
-      store.commit('updateBentoCreateModalFlag', false)
+      //ローディング開始
       store.commit('updateLoadingFlag', true)
       const db= getDatabase(firebaseApp)
       const storage = getStorage();
@@ -74,7 +75,6 @@ export default defineComponent({
       }
       //④画像のurlも含めてdbへ登録
       const saveItem= async () => {
-        console.log("userId", userId)
         push(fireDataRef(db, 'bentos/' + userId + '/' + year + `/`+ month + `/`+item.date),{
           weekEndFlag: Boolean(item.weekEndFlag),
           date: String(item.date),
@@ -90,6 +90,13 @@ export default defineComponent({
           console.log("dbへ保存できませんでした", error)
         })
       }
+      //登録後はmenusとtastesを空にしてモーダルを閉じる
+      const initializeMenuTaste= async ()=> {
+        menus.length= 0
+        tastes.length= 0
+        childRef.value.closeBentoCreateModal()
+      }
+
       //モーダル内の表示を削除
       const startSave= async ()=> {
         await uploadImage()
@@ -98,7 +105,7 @@ export default defineComponent({
         await new Promise((resolve) => setTimeout(resolve, 3000));
         await saveItem()
         await new Promise((resolve) => setTimeout(resolve, 3000));
-        await childRef.value.closeBentoCreateModal()
+        await initializeMenuTaste()
       }
       startSave()
     }
@@ -110,5 +117,4 @@ export default defineComponent({
     }
   }
 })
-
 </script>

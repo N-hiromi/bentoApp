@@ -63,4 +63,7 @@ html{
     border-color: #fffaf0;
     border-width: thin;
   }
+  .star {
+    color: #ff4500;
+  }
 </style>
